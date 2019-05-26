@@ -156,3 +156,58 @@ function pno_validate_fields_editor_settings( $save, $value, $field ) {
 
 }
 add_filter( 'carbon_fields_should_save_field_value', 'pno_validate_fields_editor_settings', 20, 3 );
+
+/**
+ * Prevent custom fields from using reserved types and meta keys.
+ *
+ * @param bool   $save true or false.
+ * @param string $value the value submitted.
+ * @param string $field field instance.
+ * @return bool
+ */
+function pno_validate_non_default_fields_settings( $save, $value, $field ) {
+
+	$field_id = isset( $_POST['post_ID'] ) ? absint( $_POST['post_ID'] ) : false;
+
+	$allowed_types = [
+		'pno_users_fields',
+		'pno_signup_fields',
+		'pno_listings_fields',
+	];
+
+	$field_names = [
+		'_profile_field_meta_key',
+		'_profile_field_type',
+		'_listing_field_meta_key',
+		'_listing_field_type',
+	];
+
+	$disallowed_types = [
+		'social-profiles',
+		'listing-category',
+		'listing-tags',
+		'listing-opening-hours',
+		'listing-location',
+	];
+
+	$post_type = get_post_type( $field_id );
+
+	if ( $field_id && is_admin() && in_array( $post_type, $allowed_types, true ) ) {
+
+		if ( in_array( $field->get_name(), $field_names ) ) {
+			if ( $post_type === 'pno_listings_fields' ) {
+				if ( $field->get_name() === '_listing_field_meta_key' && pno_is_default_field( $value ) ) {
+					wp_die( sprintf( esc_html__( 'The "%s" meta key is reserved for default fields. Please use another meta key.' ), esc_html( $value ) ) );
+				} elseif ( $field->get_name() === '_listing_field_type' && in_array( $value, $disallowed_types, true ) ) {
+					wp_die( sprintf( esc_html__( 'The "%s" type is reserved for default fields. Please use another field type.' ), esc_html( $value ) ) );
+				}
+			} elseif ( $post_type === 'pno_users_fields' ) {
+
+			}
+		}
+	}
+
+	return $save;
+
+}
+add_filter( 'carbon_fields_should_save_field_value', 'pno_validate_non_default_fields_settings', 21, 3 );
