@@ -37,8 +37,8 @@
 		"copy-webpack-plugin": "^4.6.0",
 		"cross-env": "^5.2.0",
 		"eslint": "^5.12.0",
-		"eslint-loader": "^2.0.0",
 		"eslint-config-wordpress": "^2.0.0",
+		"eslint-loader": "^2.0.0",
 		"imagemin-mozjpeg": "^6.0.0",
 		"imagemin-webpack-plugin": "^2.4.0",
 		"laravel-mix": "^4.0.14",
@@ -53,5 +53,8 @@
 		"stylelint-declaration-use-variable": "^1.7.0",
 		"stylelint-order": "^1.0.0",
 		"vue-template-compiler": "^2.5.22"
+	},
+	"dependencies": {
+		"@wordpress/hooks": "^2.3.0"
 	}
 }
