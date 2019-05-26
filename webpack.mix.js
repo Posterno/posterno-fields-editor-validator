@@ -84,7 +84,7 @@ mix.version();
  *
  * @link https://laravel.com/docs/5.6/mix#working-with-scripts
  */
-mix.js( `${devPath}/js/app.js`, 'js' );
+mix.js( `${devPath}/js/listings.js`, 'js' );
 
 /*
  * Compile CSS. Mix supports Sass, Less, Stylus, and plain CSS, and has functions
@@ -103,7 +103,7 @@ var sassConfig = {
 };
 
 // Compile SASS/CSS.
-mix.sass( `${devPath}/scss/screen.scss`, 'css', sassConfig );
+//mix.sass( `${devPath}/scss/screen.scss`, 'css', sassConfig );
 
 /*
  * Add custom Webpack configuration.
@@ -129,7 +129,7 @@ mix.webpackConfig( {
 	},
 	plugins     : [
 		// @link https://github.com/webpack-contrib/copy-webpack-plugin
-		new CopyWebpackPlugin( [
+		/*new CopyWebpackPlugin( [
 			{ from : `${devPath}/img`,   to : 'img'   },
 			{ from : `${devPath}/svg`,   to : 'svg'   },
 			{ from : `${devPath}/fonts`, to : 'fonts' }
@@ -155,7 +155,7 @@ mix.webpackConfig( {
 				// @link https://github.com/imagemin/imagemin-mozjpeg
 				imageminMozjpeg( { quality : 75 } )
 			]
-		} )
+		} )*/
 	]
 } );
 
