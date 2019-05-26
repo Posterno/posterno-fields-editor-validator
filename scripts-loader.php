@@ -99,3 +99,60 @@ function pno_is_default_field_notice() {
 	}
 }
 add_action( 'admin_head', 'pno_is_default_field_notice' );
+
+/**
+ * Prevent saving setting when they belong to a restricted Posterno custom field.
+ *
+ * @param bool   $save true or false.
+ * @param string $value the value submitted.
+ * @param string $field field instance.
+ * @return bool
+ */
+function pno_validate_fields_editor_settings( $save, $value, $field ) {
+
+	$field_id = isset( $_POST['post_ID'] ) ? absint( $_POST['post_ID'] ) : false;
+
+	$allowed_types = [
+		'pno_users_fields',
+		'pno_signup_fields',
+		'pno_listings_fields',
+	];
+
+	$field_names = [
+		'_profile_field_meta_key',
+		'_profile_field_type',
+		'_listing_field_meta_key',
+		'_listing_field_type',
+	];
+
+	$post_type = get_post_type( $field_id );
+
+	if ( $field_id && is_admin() && in_array( $post_type, $allowed_types, true ) ) {
+
+		if ( in_array( $field->get_name(), $field_names ) ) {
+			if ( $post_type === 'pno_listings_fields' ) {
+				$key = carbon_get_post_meta( $field_id, 'listing_field_meta_key' );
+
+				if ( pno_is_default_field( $key ) ) {
+					return false;
+				}
+			} elseif ( $post_type === 'pno_users_fields' ) {
+				$key = carbon_get_post_meta( $field_id, 'profile_field_meta_key' );
+				if ( pno_is_default_field( $key ) ) {
+					return false;
+				}
+			} elseif ( $post_type === 'pno_signup_fields' ) {
+				$field       = new \PNO\Database\Queries\Registration_Fields();
+				$found_field = $field->get_item_by( 'post_id', $field_id );
+
+				if ( ! $found_field->canDelete() ) {
+					return false;
+				}
+			}
+		}
+	}
+
+	return $save;
+
+}
+add_filter( 'carbon_fields_should_save_field_value', 'pno_validate_fields_editor_settings', 20, 3 );
