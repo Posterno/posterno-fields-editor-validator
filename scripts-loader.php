@@ -67,7 +67,7 @@ function pno_is_default_field_notice() {
 
 	global $post;
 
-	$message = esc_html__( 'This is a default field. Default fields cannot have their type and meta key changed and can\'t be deleted.' );
+	$message = esc_html__( 'This is a default field. Default fields cannot have their type and meta key changed and can\'t be deleted.', 'posterno' );
 
 	if ( $screen instanceof WP_Screen && $screen->id === 'pno_users_fields' ) {
 
@@ -197,15 +197,15 @@ function pno_validate_non_default_fields_settings( $save, $value, $field ) {
 		if ( in_array( $field->get_name(), $field_names ) ) {
 			if ( $post_type === 'pno_listings_fields' ) {
 				if ( $field->get_name() === '_listing_field_meta_key' && pno_is_default_field( $value ) ) {
-					wp_die( sprintf( esc_html__( 'The "%s" meta key is reserved for default fields. Please use another meta key.' ), esc_html( $value ) ) );
+					wp_die( sprintf( esc_html__( 'The "%s" meta key is reserved for default fields. Please use another meta key.', 'posterno' ), esc_html( $value ) ) );
 				} elseif ( $field->get_name() === '_listing_field_type' && in_array( $value, $disallowed_types, true ) ) {
-					wp_die( sprintf( esc_html__( 'The "%s" type is reserved for default fields. Please use another field type.' ), esc_html( $value ) ) );
+					wp_die( sprintf( esc_html__( 'The "%s" type is reserved for default fields. Please use another field type.', 'posterno' ), esc_html( $value ) ) );
 				}
 			} elseif ( $post_type === 'pno_users_fields' ) {
 				if ( $field->get_name() === '_profile_field_meta_key' && pno_is_default_field( $value ) ) {
-					wp_die( sprintf( esc_html__( 'The "%s" meta key is reserved for default fields. Please use another meta key.' ), esc_html( $value ) ) );
+					wp_die( sprintf( esc_html__( 'The "%s" meta key is reserved for default fields. Please use another meta key.', 'posterno' ), esc_html( $value ) ) );
 				} elseif ( $field->get_name() === '_profile_field_type' && in_array( $value, $disallowed_types, true ) ) {
-					wp_die( sprintf( esc_html__( 'The "%s" type is reserved for default fields. Please use another field type.' ), esc_html( $value ) ) );
+					wp_die( sprintf( esc_html__( 'The "%s" type is reserved for default fields. Please use another field type.', 'posterno' ), esc_html( $value ) ) );
 				}
 			}
 		}
