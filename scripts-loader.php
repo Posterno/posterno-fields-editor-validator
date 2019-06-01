@@ -209,7 +209,7 @@ function pno_validate_non_default_fields_settings( $save, $value, $field ) {
 
 		if ( is_object( $form_field ) && ! $form_field->canDelete() ) {
 
-			$error_message = esc_html__( 'The meta key and type setting cannot be changed for default fields.' );
+			$error_message = esc_html__( 'The meta key and type setting cannot be changed for default fields.', 'posterno' );
 
 			if ( in_array( $field->get_name(), $field_names ) ) {
 
