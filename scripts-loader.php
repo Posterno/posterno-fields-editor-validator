@@ -194,18 +194,54 @@ function pno_validate_non_default_fields_settings( $save, $value, $field ) {
 
 	if ( $field_id && is_admin() && in_array( $post_type, $allowed_types, true ) ) {
 
-		if ( in_array( $field->get_name(), $field_names ) ) {
-			if ( $post_type === 'pno_listings_fields' ) {
-				if ( $field->get_name() === '_listing_field_meta_key' && pno_is_default_field( $value ) ) {
-					wp_die( sprintf( esc_html__( 'The "%s" meta key is reserved for default fields. Please use another meta key.', 'posterno' ), esc_html( $value ) ) );
-				} elseif ( $field->get_name() === '_listing_field_type' && in_array( $value, $disallowed_types, true ) ) {
-					wp_die( sprintf( esc_html__( 'The "%s" type is reserved for default fields. Please use another field type.', 'posterno' ), esc_html( $value ) ) );
+		$form_field = false;
+
+		if ( $post_type === 'pno_listings_fields' ) {
+			$dbfield    = new \PNO\Database\Queries\Listing_Fields();
+			$form_field = $dbfield->get_item_by( 'post_id', $field_id );
+		} elseif ( $post_type === 'pno_users_fields' ) {
+			$dbfield    = new \PNO\Database\Queries\Profile_Fields();
+			$form_field = $dbfield->get_item_by( 'post_id', $field_id );
+		} elseif ( $post_type === 'pno_signup_fields' ) {
+			$dbfield    = new \PNO\Database\Queries\Registration_Fields();
+			$form_field = $dbfield->get_item_by( 'post_id', $field_id );
+		}
+
+		if ( is_object( $form_field ) && ! $form_field->canDelete() ) {
+
+			$error_message = esc_html__( 'The meta key and type setting cannot be changed for default fields.' );
+
+			if ( in_array( $field->get_name(), $field_names ) ) {
+
+				$stored_meta_key = $form_field->getObjectMetaKey();
+				$stored_type     = $form_field->getType();
+
+				if ( $field->get_name() === '_listing_field_meta_key' && $value !== $stored_meta_key ) {
+					wp_die( $error_message );
+				} elseif ( $field->get_name() === '_listing_field_type' && $value !== $stored_type ) {
+					wp_die( $error_message );
+				} if ( $field->get_name() === '_profile_field_meta_key' && $value !== $stored_meta_key ) {
+					wp_die( $error_message );
+				} elseif ( $field->get_name() === '_profile_field_type' && $value !== $stored_type ) {
+					wp_die( $error_message );
 				}
-			} elseif ( $post_type === 'pno_users_fields' ) {
-				if ( $field->get_name() === '_profile_field_meta_key' && pno_is_default_field( $value ) ) {
-					wp_die( sprintf( esc_html__( 'The "%s" meta key is reserved for default fields. Please use another meta key.', 'posterno' ), esc_html( $value ) ) );
-				} elseif ( $field->get_name() === '_profile_field_type' && in_array( $value, $disallowed_types, true ) ) {
-					wp_die( sprintf( esc_html__( 'The "%s" type is reserved for default fields. Please use another field type.', 'posterno' ), esc_html( $value ) ) );
+			}
+		} else {
+
+			// Check all non-default fields.
+			if ( in_array( $field->get_name(), $field_names ) ) {
+				if ( $post_type === 'pno_listings_fields' ) {
+					if ( $field->get_name() === '_listing_field_meta_key' && pno_is_default_field( $value ) ) {
+						wp_die( sprintf( esc_html__( 'The "%s" meta key is reserved for default fields. Please use another meta key.', 'posterno' ), esc_html( $value ) ) );
+					} elseif ( $field->get_name() === '_listing_field_type' && in_array( $value, $disallowed_types, true ) ) {
+						wp_die( sprintf( esc_html__( 'The "%s" type is reserved for default fields. Please use another field type.', 'posterno' ), esc_html( $value ) ) );
+					}
+				} elseif ( $post_type === 'pno_users_fields' ) {
+					if ( $field->get_name() === '_profile_field_meta_key' && pno_is_default_field( $value ) ) {
+						wp_die( sprintf( esc_html__( 'The "%s" meta key is reserved for default fields. Please use another meta key.', 'posterno' ), esc_html( $value ) ) );
+					} elseif ( $field->get_name() === '_profile_field_type' && in_array( $value, $disallowed_types, true ) ) {
+						wp_die( sprintf( esc_html__( 'The "%s" type is reserved for default fields. Please use another field type.', 'posterno' ), esc_html( $value ) ) );
+					}
 				}
 			}
 		}
